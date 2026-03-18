@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Category, Dish, Order, Review
 from .serializers import (
@@ -87,3 +88,10 @@ class ReviewCreateView(generics.CreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        order = serializer.validated_data["order"]
+        if order.user != self.request.user:
+            raise PermissionDenied("Non puoi recensire un ordine non tuo.")
+        serializer.save()
+

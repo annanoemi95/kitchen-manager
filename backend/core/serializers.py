@@ -126,10 +126,10 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = ['total_amount']
 
 # Serializer per le recensioni
+
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        # Il rating ora seguirà la validazione 1-5 definita nel modello
         fields = [
             'id',
             'order',
@@ -137,3 +137,19 @@ class ReviewSerializer(serializers.ModelSerializer):
             'comment',
             'created_at'
         ]
+        read_only_fields = ['id', 'created_at']
+
+    def validate(self, data):
+        order = data["order"]
+
+        if order.status != "delivered":
+            raise serializers.ValidationError(
+                "Accesso negato: puoi recensire l'ordine solo dopo la consegna."
+            )
+
+        if hasattr(order, "review"):
+            raise serializers.ValidationError(
+                "Errore: hai già lasciato una recensione per questo ordine."
+            )
+
+        return data

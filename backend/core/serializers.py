@@ -41,28 +41,15 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['total_amount']
 
+# Serializer per le recensioni
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ['id', 'order', 'rating', 'comment', 'created_at']
-        read_only_fields = ['id', 'created_at']
-
-    def validate(self, data):
-        """
-        Logica dinamica: sblocco recensioni basato sullo stato dell'ordine.
-        """
-        order = data['order']
-
-        # 1. Controllo stato: solo ordini consegnati
-        if order.status != 'delivered':
-            raise serializers.ValidationError(
-                "Accesso negato: puoi recensire l'ordine solo dopo la consegna."
-            )
-
-        # 2. Vincolo di unicità: una recensione per ordine
-        if hasattr(order, 'review'):
-            raise serializers.ValidationError(
-                "Errore: Hai già lasciato una recensione per questo ordine."
-            )
-
-        return data
+        # Il rating ora seguirà la validazione 1-5 definita nel modello
+        fields = [
+            'id',
+            'order',
+            'rating',
+            'comment',
+            'created_at'
+        ]

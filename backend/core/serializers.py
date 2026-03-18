@@ -1,5 +1,58 @@
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import User, Category, Dish, Order, OrderItem, Review
+
+# ──────────────────────────────────────────
+# AUTH SERIALIZERS (Anna)
+# ──────────────────────────────────────────
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, validators=[validate_password])
+    password_confirm = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'password', 'password_confirm']
+        extra_kwargs = {
+            'email': {'required': False}
+        }
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs.pop('password_confirm'):
+            raise serializers.ValidationError({"password": "Le password non coincidono."})
+        return attrs
+
+    def create(self, validated_data):
+        return User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password'],
+            role='customer',  # nessun utente si auto-assegna admin
+        )
+
+
+class UserMeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'role']
+        read_only_fields = ['id', 'username', 'email', 'role']
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['role'] = user.role  # ruolo nel payload JWT
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['role'] = self.user.role    # ruolo nel body della response
+        data['user_id'] = self.user.id
+        return data
+
+
 
 # Serializer per l'utente: proteggiamo i dati sensibili
 class UserSerializer(serializers.ModelSerializer):

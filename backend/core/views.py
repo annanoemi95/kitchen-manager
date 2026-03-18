@@ -1,11 +1,54 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Category, Dish, Order, Review
 from .serializers import (
     CategorySerializer,
     DishSerializer,
     OrderSerializer,
-    ReviewSerializer
+    ReviewSerializer,
+    RegisterSerializer,
+    UserMeSerializer,
+    CustomTokenObtainPairSerializer
 )
+
+class RegisterView(APIView):
+    """
+    POST /auth/register/
+    Registrazione pubblica — crea sempre un customer.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(
+                UserMeSerializer(user).data,
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    """
+    POST /auth/login/
+    Login customer e admin — restituisce access, refresh, role, user_id.
+    """
+    serializer_class = CustomTokenObtainPairSerializer
+
+
+class MeView(APIView):
+    """
+    GET /auth/me/
+    Restituisce i dati dell'utente autenticato. Richiede token valido.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response(UserMeSerializer(request.user).data)
+
 
 # --- VIEWS PER IL MENU (Pubbliche) ---
 

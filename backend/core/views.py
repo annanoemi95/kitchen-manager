@@ -1,12 +1,9 @@
-from django.contrib.auth import authenticate, get_user_model
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import Category, Dish, Order, Review
 from .serializers import (
@@ -14,128 +11,58 @@ from .serializers import (
     DishSerializer,
     OrderSerializer,
     ReviewSerializer,
+    RegisterSerializer,
+    UserMeSerializer,
+    CustomTokenObtainPairSerializer,
 )
 from .services import AIService
 
 
-User = get_user_model()
-
+# ──────────────────────────────────────────
+# AUTH VIEWS (Anna)
+# ──────────────────────────────────────────
 
 class RegisterView(APIView):
     """
     POST /api/auth/register/
-    Registrazione pubblica: crea sempre un customer.
+    Registrazione pubblica — crea sempre un customer.
     """
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        username = request.data.get("username", "").strip()
-        email = request.data.get("email", "").strip()
-        password = request.data.get("password", "")
-        password_confirm = request.data.get("password_confirm", "")
-
-        if not username:
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
             return Response(
-                {"username": ["Questo campo è obbligatorio."]},
-                status=status.HTTP_400_BAD_REQUEST,
+                UserMeSerializer(user).data,
+                status=status.HTTP_201_CREATED
             )
-
-        if not password:
-            return Response(
-                {"password": ["Questo campo è obbligatorio."]},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if password != password_confirm:
-            return Response(
-                {"password": ["Le password non coincidono."]},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if User.objects.filter(username=username).exists():
-            return Response(
-                {"username": ["Questo username è già in uso."]},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        try:
-            validate_password(password)
-        except DjangoValidationError as exc:
-            return Response(
-                {"password": list(exc.messages)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-            role="customer",
-        )
-
-        return Response(
-            {
-                "id": user.id,
-                "username": user.username,
-                "email": user.email,
-                "role": user.role,
-            },
-            status=status.HTTP_201_CREATED,
-        )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CustomTokenObtainPairView(APIView):
+class CustomTokenObtainPairView(TokenObtainPairView):
     """
     POST /api/auth/login/
-    Login customer e admin: restituisce access, refresh, role e user_id.
+    Login customer e admin — restituisce access, refresh, role, user_id.
     """
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        username = request.data.get("username", "")
-        password = request.data.get("password", "")
-
-        user = authenticate(request, username=username, password=password)
-        if user is None:
-            return Response(
-                {"detail": "Credenziali non valide."},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-
-        refresh = RefreshToken.for_user(user)
-        refresh["role"] = user.role
-
-        return Response(
-            {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-                "role": user.role,
-                "user_id": user.id,
-            },
-            status=status.HTTP_200_OK,
-        )
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class MeView(APIView):
     """
     GET /api/auth/me/
-    Restituisce i dati dell'utente autenticato.
+    Restituisce i dati dell'utente autenticato. Richiede token valido.
     """
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        return Response(
-            {
-                "id": user.id,
-                "username": user.username,
-                "email": user.email,
-                "role": user.role,
-            }
-        )
+        return Response(UserMeSerializer(request.user).data)
 
 
-# --- BLOCCO MENU (Marika) ---
+# ──────────────────────────────────────────
+# MENU VIEWS (Marika)
+# ──────────────────────────────────────────
+
 class CategoryListView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -148,7 +75,10 @@ class DishListView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
 
 
-# --- BLOCCO ORDINI (Chiara) ---
+# ──────────────────────────────────────────
+# ORDER VIEWS (Chiara)
+# ──────────────────────────────────────────
+
 class OrderListCreateView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -167,7 +97,10 @@ class OrderListCreateView(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
-# --- BLOCCO RECENSIONI & AI (Isabelle) ---
+# ──────────────────────────────────────────
+# REVIEW VIEWS (Isabelle)
+# ──────────────────────────────────────────
+
 class ReviewViewSet(viewsets.ModelViewSet):
     """
     Gestisce il ciclo di vita delle recensioni e l'analisi AI per l'admin.

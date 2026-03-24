@@ -25,7 +25,7 @@ export function Navbar() {
               `app-nav__link${isActive ? ' app-nav__link--active' : ''}`
             }
           >
-            Inizio
+            Home
           </NavLink>
           <NavLink
             to="/menu"

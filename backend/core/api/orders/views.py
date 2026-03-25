@@ -43,7 +43,24 @@ class OrderListCreateView(APIView):
 
         if not is_admin:
             queryset = queryset.filter(user=request.user)
+        else:
+            # ── FILTRI ADMIN ─────────────────────────────
+            status_param = request.query_params.get('status')
+            if status_param:
+                queryset = queryset.filter(status=status_param)
 
+            date_from = request.query_params.get('date_from')
+            date_to = request.query_params.get('date_to')
+            if date_from:
+                queryset = queryset.filter(created_at__date__gte=date_from)
+            if date_to:
+                queryset = queryset.filter(created_at__date__lte=date_to)
+
+            customer = request.query_params.get('customer')
+            if customer:
+                queryset = queryset.filter(user__username__icontains=customer)
+
+    
         serializer = OrderSerializer(queryset, many=True)
         return Response(serializer.data)
 

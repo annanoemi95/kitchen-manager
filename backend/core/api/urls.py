@@ -31,8 +31,7 @@ urlpatterns = [
 
     # ── ORDERS ────────────────────────────
     path("orders/", include("core.api.orders.urls")),
-    path('orders/', OrderListCreateView.as_view(), name='order-list-create'),
-
+    
     # ── REVIEWS + AI ──────────────────────
     path('', include(router.urls)),
 ]

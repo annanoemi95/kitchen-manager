@@ -1,6 +1,6 @@
 # Kitchen Manager
 
-Questo documento raccoglie i passaggi minimi per configurare l'ambiente locale del progetto, sia lato backend sia lato frontend.     
+Questo documento raccoglie i passaggi minimi per configurare l'ambiente locale del progetto, sia lato backend sia lato frontend.
 
 ## Setup iniziale del progetto
 
@@ -56,7 +56,7 @@ Ogni volta che cloni il progetto da zero, elimini il database (`db.sqlite3`) o h
 ./setup_dev.sh
 ```
 
-Lo script usa automaticamente `../.venv/bin/python` se il virtualenv di progetto esiste; in alternativa ripiega su `python3`.
+Lo script esegue i comandi con `python3`, quindi e consigliato attivare prima il virtual environment `.venv`.
 
 ### 2. Nota per utenti Mac
 
@@ -73,7 +73,6 @@ Per garantire che tutto il team lavori con gli stessi standard, lo script esegue
 1. **Migrazioni**: allinea le tabelle del database all'ultima versione.
 2. **Seed Admin**: crea o aggiorna l'account amministratore `admin` / `admin123`.
 3. **Seed Menu**: genera categorie e piatti di test, inclusi casi limite per la UX.
-4. **Seed Orders**: genera ordini e recensioni di test per verificare il flow completo.
 
 ### 4. Credenziali admin
 
@@ -87,17 +86,17 @@ Per i test nel pannello di amministrazione usa sempre:
 - **Velocità**: configura database, utenti e dati seed in un solo passaggio.
 - **Test Soft Delete**: il seed include piatti con `is_active=False` per verificare che restino nello storico ordini senza apparire nel menu pubblico.
 - **Test Disponibilità**: include piatti con `is_available=False` per verificare la gestione dei prodotti "Sold Out" nel frontend.
-- **Pattern Observer**: permette di testare immediatamente i signals usando dati reali e coerenti.
-- **Flow completo**: prepara dati coerenti per testare login admin, ordini cliente, avanzamento stato e recensioni.
+- **Coerenza iniziale**: prepara il progetto con un admin di test e un menu seed minimo.
+- **Base per la demo**: offre dati iniziali utili per verificare login admin, consultazione menu e creazione ordini.
 
 ### 6. Configurazione Gemini API Key
 
 Per motivi di sicurezza e per evitare di consumare la quota gratuita condivisa, ogni persona deve usare la propria chiave Gemini in locale.
 
-Puoi partire dal file di esempio:
+Se il file non esiste ancora, crealo manualmente:
 
 ```bash
-cp backend/.env.example backend/.env
+touch backend/.env
 ```
 
 ### Come impostarla in 1 minuto
@@ -118,7 +117,7 @@ GEMINI_API_KEY=tua_chiave_qui
 
 Dopo aver salvato tutto:
 
-1. crea `backend/.env` a partire da `backend/.env.example`
+1. crea `backend/.env` se non esiste ancora
 2. inserisci la tua chiave personale
 3. avvia il backend da `backend/`
 4. testa l'endpoint oppure il bottone nella pagina admin recensioni

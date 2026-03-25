@@ -506,6 +506,92 @@ button {
   gap: 18px;
 }
 
+.admin-menu-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 400px);
+  gap: 22px;
+  align-items: start;
+}
+
+.admin-menu-list {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-menu-card,
+.admin-menu-form-panel {
+  padding: 24px;
+}
+
+.admin-menu-card {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-menu-card__header,
+.admin-menu-card__footer,
+.admin-menu-form__actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-menu-card h2,
+.admin-menu-form-panel h2 {
+  margin: 0 0 8px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 2rem;
+}
+
+.admin-menu-card__description {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+.admin-menu-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-menu-form__toggles {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-menu-form-panel {
+  position: sticky;
+  top: 106px;
+  display: grid;
+  gap: 20px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.checkbox-row input {
+  margin-top: 4px;
+  accent-color: var(--color-primary);
+}
+
+.checkbox-row span {
+  display: grid;
+  gap: 4px;
+}
+
+.checkbox-row small {
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  font-weight: 400;
+}
+
 .cart-list {
   display: grid;
   gap: 12px;
@@ -795,6 +881,7 @@ button {
 @media (max-width: 900px) {
   .hero,
   .menu-grid,
+  .admin-menu-layout,
   .feature-grid,
   .dish-grid,
   .ai-grid {
@@ -812,6 +899,10 @@ button {
   }
 
   .cart-panel {
+    position: static;
+  }
+
+  .admin-menu-form-panel {
     position: static;
   }
 }

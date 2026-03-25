@@ -77,6 +77,21 @@ class DishSerializer(serializers.ModelSerializer):
             'category', 'category_name', 'is_active', 'is_available'
         ]
 
+    def validate(self, attrs):
+        is_active = attrs.get(
+            'is_active',
+            self.instance.is_active if self.instance is not None else True,
+        )
+        is_available = attrs.get(
+            'is_available',
+            self.instance.is_available if self.instance is not None else True,
+        )
+
+        if not is_active and is_available:
+            attrs['is_available'] = False
+
+        return attrs
+
 class OrderItemSerializer(serializers.ModelSerializer):
     dish_details = DishSerializer(source='dish', read_only=True)
 

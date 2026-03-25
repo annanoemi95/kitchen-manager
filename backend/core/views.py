@@ -15,6 +15,7 @@ from .serializers import (
     UserMeSerializer,
     CustomTokenObtainPairSerializer,
 )
+from .permissions import IsAdmin
 from .services import AIService
 
 
@@ -73,6 +74,27 @@ class DishListView(generics.ListAPIView):
     queryset = Dish.objects.filter(is_active=True)
     serializer_class = DishSerializer
     permission_classes = [permissions.AllowAny]
+
+
+class AdminDishListCreateView(generics.ListCreateAPIView):
+    serializer_class = DishSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get_queryset(self):
+        return Dish.objects.select_related('category').order_by('category__name', 'name')
+
+
+class AdminDishDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = DishSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get_queryset(self):
+        return Dish.objects.select_related('category').all()
+
+    def perform_destroy(self, instance):
+        instance.is_active = False
+        instance.is_available = False
+        instance.save(update_fields=['is_active', 'is_available'])
 
 
 # ──────────────────────────────────────────

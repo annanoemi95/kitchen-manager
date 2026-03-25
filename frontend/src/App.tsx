@@ -4,6 +4,7 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { MenuPage } from './pages/MenuPage';
 import { OrdersPage } from './pages/OrdersPage';
+import { AdminMenuPage } from './pages/AdminMenuPage';
 import { AdminOrdersPage } from './pages/AdminOrdersPage';
 import { AdminReviewsPage } from './pages/AdminReviewsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
@@ -23,6 +24,7 @@ export default function App() {
       </Route>
 
       <Route element={<AdminRoute />}>
+        <Route path="/admin/menu" element={<AdminMenuPage />} />
         <Route path="/admin/orders" element={<AdminOrdersPage />} />
         <Route path="/admin/reviews" element={<AdminReviewsPage />} />
       </Route>

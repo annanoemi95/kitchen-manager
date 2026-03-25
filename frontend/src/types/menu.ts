@@ -14,3 +14,12 @@ export type Dish = {
   isAvailable: boolean;
   imageUrl?: string;
 };
+
+export type DishUpsertInput = {
+  name: string;
+  description: string;
+  price: number;
+  category: number;
+  isActive: boolean;
+  isAvailable: boolean;
+};

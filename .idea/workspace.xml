@@ -4,7 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="52574192-6bcd-47ae-9e93-3d506699f8d0" name="Changes" comment="Update: typo adjustment" />
+    <list default="true" id="52574192-6bcd-47ae-9e93-3d506699f8d0" name="Changes" comment="Update: typo adjustment">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/core/api/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/core/api/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/core/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/core/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/core/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/core/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/core/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/public/images/dishes/bacon-burger.svg" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/public/images/dishes/bacon-burger.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/public/images/dishes/coca-cola.svg" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/public/images/dishes/coca-cola.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/public/images/dishes/diavola.svg" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/public/images/dishes/diavola.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/public/images/dishes/margherita.svg" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/public/images/dishes/margherita.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/public/images/dishes/pizza-storica.svg" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/public/images/dishes/pizza-storica.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/menu.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/menu.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/layout/Navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/layout/Navbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/styles/global.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/styles/global.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/types/menu.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/types/menu.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

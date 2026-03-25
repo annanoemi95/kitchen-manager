@@ -48,6 +48,14 @@ export function Navbar() {
           {role === 'admin' ? (
             <>
               <NavLink
+                to="/admin/menu"
+                className={({ isActive }) =>
+                  `app-nav__link${isActive ? ' app-nav__link--active' : ''}`
+                }
+              >
+                Gestisci menu
+              </NavLink>
+              <NavLink
                 to="/admin/orders"
                 className={({ isActive }) =>
                   `app-nav__link${isActive ? ' app-nav__link--active' : ''}`

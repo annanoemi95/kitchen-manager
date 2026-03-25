@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 from rest_framework import status
 from unittest.mock import patch
-from .models import Order, Review
+from .models import Category, Dish, Order, Review
 
 User = get_user_model()
 
@@ -66,3 +66,103 @@ class ReviewSecurityTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['results']['top_dish'], "Pizza Margherita")
         mock_ai_analyze.assert_called_once()
+
+
+class AdminMenuManagementTests(APITestCase):
+    def setUp(self):
+        self.admin = User.objects.create_user(
+            username='menu_admin',
+            password='password123',
+            role='admin',
+        )
+        self.customer = User.objects.create_user(
+            username='menu_customer',
+            password='password123',
+            role='customer',
+        )
+        self.category = Category.objects.create(name='Pizze')
+        self.secondary_category = Category.objects.create(name='Bevande')
+        self.active_dish = Dish.objects.create(
+            name='Margherita',
+            description='Pomodoro e mozzarella',
+            price=8.50,
+            category=self.category,
+            is_active=True,
+            is_available=True,
+        )
+        self.inactive_dish = Dish.objects.create(
+            name='Pizza Storica',
+            description='Fuori menu',
+            price=15.00,
+            category=self.category,
+            is_active=False,
+            is_available=False,
+        )
+
+    def test_admin_can_list_all_dishes_for_management(self):
+        self.client.force_authenticate(user=self.admin)
+
+        response = self.client.get('/api/admin/dishes/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        returned_ids = {dish['id'] for dish in response.data}
+        self.assertEqual(returned_ids, {self.active_dish.id, self.inactive_dish.id})
+
+    def test_customer_cannot_manage_dishes(self):
+        self.client.force_authenticate(user=self.customer)
+
+        response = self.client.post(
+            '/api/admin/dishes/',
+            {
+                'name': 'Nuovo piatto',
+                'description': 'Test',
+                'price': '9.50',
+                'category': self.category.id,
+                'is_active': True,
+                'is_available': True,
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_can_create_update_and_disable_dish(self):
+        self.client.force_authenticate(user=self.admin)
+
+        create_response = self.client.post(
+            '/api/admin/dishes/',
+            {
+                'name': 'Limonata',
+                'description': 'Bibita fresca',
+                'price': '3.50',
+                'category': self.secondary_category.id,
+                'is_active': True,
+                'is_available': True,
+            },
+            format='json',
+        )
+
+        self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+        created_dish_id = create_response.data['id']
+
+        update_response = self.client.patch(
+            f'/api/admin/dishes/{created_dish_id}/',
+            {
+                'name': 'Limonata artigianale',
+                'is_available': False,
+            },
+            format='json',
+        )
+
+        self.assertEqual(update_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(update_response.data['name'], 'Limonata artigianale')
+        self.assertFalse(update_response.data['is_available'])
+
+        disable_response = self.client.delete(f'/api/admin/dishes/{created_dish_id}/')
+
+        self.assertEqual(disable_response.status_code, status.HTTP_204_NO_CONTENT)
+
+        disabled_dish = Dish.objects.get(id=created_dish_id)
+        self.assertFalse(disabled_dish.is_active)
+        self.assertFalse(disabled_dish.is_available)

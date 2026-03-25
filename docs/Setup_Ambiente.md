@@ -1,6 +1,50 @@
 # Kitchen Manager
 
-Questo documento raccoglie i passaggi minimi per configurare l'ambiente locale del progetto, sia lato backend sia lato frontend.
+Questo documento raccoglie i passaggi minimi per configurare l'ambiente locale del progetto, sia lato backend sia lato frontend.     
+
+## Setup iniziale del progetto
+
+### 1. Clonare il repository
+
+Apri il terminale nella cartella in cui vuoi salvare il progetto ed esegui:
+
+```bash
+git clone <URL_DEL_REPOSITORY>
+cd kitchen-manager
+```
+
+Sostituisci `<URL_DEL_REPOSITORY>` con il link Git del repository condiviso su GitHub.
+
+### 2. Creare il virtual environment
+
+Dalla root del progetto crea un virtual environment locale:
+
+```bash
+python3 -m venv .venv
+```
+
+Per attivarlo:
+
+```bash
+source .venv/bin/activate
+```
+
+Se tutto e andato bene, nel terminale vedrai comparire il prefisso `(.venv)`.
+
+### 3. Installare le dipendenze backend
+
+Con il virtual environment attivo, installa i pacchetti Python richiesti dal progetto:
+
+```bash
+pip install -r backend/requirements.txt
+```
+
+Se vuoi verificare che `pip` stia usando davvero il virtual environment appena creato, puoi controllare con:
+
+```bash
+which python
+which pip
+```
 
 ## Backend
 
